@@ -112,9 +112,9 @@ $app->group('/api/v0/users/{id:[0-9]+}', function (RouteCollectorProxy $group) {
 //  */
 $app->get('/api/v0/company/all', function (Request $request,Response  $response, $args) {
     $sql = "select `company_id`,`company_name`, `company_alias`, `active`, `created_dt`,  `licenses`,   `contract_start`, `contractFiles`,`contract_end`,`notes`, `structures`,`created_dt` from roi_companies;";
-    $dbhost = 'localhost';
-    $dbuser = 'root';
-    $dbpass = '';
+    $dbhost = 'db-sandbox.cmhzsdmoqjl7.us-east-1.rds.amazonaws.com';
+    $dbuser = 'admin';
+    $dbpass = 'TycKdB7X106OU4GH';
     $dbname = 'roi';
     $mysqli = new mysqli($dbhost, $dbuser, $dbpass, $dbname);
     
@@ -157,9 +157,9 @@ $app->get('/api/v0/company/all', function (Request $request,Response  $response,
 //get structures
 $app->get('/api/v0/structure/all', function (Request $request,Response  $response, $args) {
     $sql = "select rcs.structure_id, rcs.structure_title, rcs.company_id, rcs.active, rcs.created_dt, rcs.notes, rc.company_name from roi_company_structures as rcs inner join roi_companies as rc on rcs.company_id = rc.company_id;";
-    $dbhost = 'localhost';
-    $dbuser = 'root';
-    $dbpass = '';
+    $dbhost = 'db-sandbox.cmhzsdmoqjl7.us-east-1.rds.amazonaws.com';
+    $dbuser = 'admin';
+    $dbpass = 'TycKdB7X106OU4GH';
     $dbname = 'roi';
     $mysqli = new mysqli($dbhost, $dbuser, $dbpass, $dbname);
     
@@ -199,9 +199,9 @@ $app->get('/api/v0/version/{id}', function (Request $request, Response $response
 
     $versionId = (int)$arguments['id'];
     $sql = "select * from roi_structure_versions where version_id = $versionId;";
-    $dbhost = 'localhost';
-    $dbuser = 'root';
-    $dbpass = '';
+    $dbhost = 'db-sandbox.cmhzsdmoqjl7.us-east-1.rds.amazonaws.com';
+    $dbuser = 'admin';
+    $dbpass = 'TycKdB7X106OU4GH';
     $dbname = 'roi';
     $mysqli = new mysqli($dbhost, $dbuser, $dbpass, $dbname);
     
@@ -259,9 +259,9 @@ $app->post('/api/v0/company', function (Request $request,Response  $response, $a
             $structures =  ($params['structure']=='') ? 1 : $params['structure'];
             $created_dt = date("Y-m-d");
             
-            $dbhost = 'localhost';
-            $dbuser = 'root';
-            $dbpass = '';
+            $dbhost = 'db-sandbox.cmhzsdmoqjl7.us-east-1.rds.amazonaws.com';
+            $dbuser = 'admin';
+            $dbpass = 'TycKdB7X106OU4GH';
             $dbname = 'roi';
             $mysqli = new mysqli($dbhost, $dbuser, $dbpass, $dbname);
         
@@ -302,9 +302,9 @@ $app->post('/api/v0/structure', function (Request $request,Response  $response, 
             $notes = $params['templateNotes'];
             $created_dt = date("Y-m-d");
             
-            $dbhost = 'localhost';
-            $dbuser = 'root';
-            $dbpass = '';
+            $dbhost = 'db-sandbox.cmhzsdmoqjl7.us-east-1.rds.amazonaws.com';
+            $dbuser = 'admin';
+            $dbpass = 'TycKdB7X106OU4GH';
             $dbname = 'roi';
             $mysqli = new mysqli($dbhost, $dbuser, $dbpass, $dbname);
         
@@ -343,9 +343,9 @@ $app->post('/api/v0/version', function (Request $request,Response  $response, $a
             $version_notes = $params['version_notes'];
             $created_dt = date("Y-m-d");
             
-            $dbhost = 'localhost';
-            $dbuser = 'root';
-            $dbpass = '';
+            $dbhost = 'db-sandbox.cmhzsdmoqjl7.us-east-1.rds.amazonaws.com';
+            $dbuser = 'admin';
+            $dbpass = 'TycKdB7X106OU4GH';
             $dbname = 'roi';
             $mysqli = new mysqli($dbhost, $dbuser, $dbpass, $dbname);
         
