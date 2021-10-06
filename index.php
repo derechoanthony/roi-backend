@@ -319,7 +319,9 @@ $app->post('/api/v0/structure', function (Request $request,Response  $response, 
                 printf("Connect failed: %s<br />", $mysqli->connect_error);
                 exit();
             }
-                $sql = "insert into roi_company_structures(structure_title,company_id,active,created_dt,notes)values('$structure_title',$company_id,$active,'$created_dt','$notes')";
+                $sql = "insert into roi_company_structures(structure_title,company_id,active,created_dt,notes)values('$structure_title',$company_id,$active,'$created_dt','$notes');";
+
+                var_dump($sql)
                
                 $mysqli->query($sql);
                 $last_id = $mysqli->insert_id;
