@@ -264,6 +264,8 @@ $app->post('/api/v0/company', function (Request $request,Response  $response, $a
             $notes = $params['notes'];
             $structures =  ($params['structure']=='') ? 1 : $params['structure'];
             $created_dt = date("Y-m-d");
+            $contactfname = ($params['contactfname']=="") ? "NA" : $params['contactfname'];
+            $contactlname = ($params['contactlname']=="") ? "NA" : $params['contactlname'];
             
             $dbhost = 'aws-sandbox-development.cmhzsdmoqjl7.us-east-1.rds.amazonaws.com';
             $dbuser = 'admin';
@@ -275,12 +277,11 @@ $app->post('/api/v0/company', function (Request $request,Response  $response, $a
                 printf("Connect failed: %s<br />", $mysqli->connect_error);
                 exit();
             }
-                $sql = "insert into roi_companies(company_name,company_alias,licenses,account_contact,account_email,contract_start,contract_end,notes,contractFiles,structures,created_dt) values
-                        ('$companyName','$companyAlias','$license','$contacts','$contactsEmail','$contractStart','$contractEnd','$notes','$filename','$structures','$created_dt');";
+                $sql = "insert into roi_companies(company_name,company_alias,licenses,account_contact,account_email,contract_start,contract_end,notes,contractFiles,structures,created_dt,account_contact_fname,account_contact_lname) values
+                        ('$companyName','$companyAlias','$license','$contacts','$contactsEmail','$contractStart','$contractEnd','$notes','$filename','$structures','$created_dt','$contactfname','$contactlname');";
                
                 $mysqli->query($sql);
                 $last_id = $mysqli->insert_id;
-
                 $data = ["company_id"=>$last_id];
                 $response->getBody()->write((string)json_encode(
                     ["data"=>[$data],"success"=>"true","message"=>"ok"]));
