@@ -257,8 +257,8 @@ $app->post('/api/v0/company', function (Request $request,Response  $response, $a
             $companyName = $params['companyName'];
             $companyAlias = $params['companyAlias'];
             $license = ($params['license']=="") ? 0 : $params['license'];
-            $contacts = ($params['contacts']=="") ? 0 : $params['contacts'];
-            $contactsEmail = ($params['contactsEmail']=="") ? "" : $params['contactsEmail'];
+            $contacts = ($params['contacts']=="") ? "NA" : $params['contacts'];
+            $contactsEmail = ($params['contactsEmail']=="") ? "NA" : $params['contactsEmail'];
             $contractStart = ($params['contractStart']=='') ? date("Y-m-d") : $params['contractStart'];
             $contractEnd = ($params['contractEnd']=='') ? date("Y-m-d") : $params['contractStart'];
             $notes = $params['notes'];
