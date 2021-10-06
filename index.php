@@ -202,9 +202,10 @@ $app->get('/api/v0/structure/all', function (Request $request,Response  $respons
 
 //get version
 $app->get('/api/v0/version/{id}', function (Request $request, Response $response, array $arguments): Response {
+// $app->get('/api/v0/version/{id}', function (Request $request, Response $response, array $arguments): Response {
 
     $versionId = (int)$arguments['id'];
-    $sql = "select * from roi_structure_versions where version_id = $versionId;";
+    $sql = "select * from roi_structure_versions where structure_id = $versionId;";
     $dbhost = 'aws-sandbox-development.cmhzsdmoqjl7.us-east-1.rds.amazonaws.com';
     $dbuser = 'admin';
     $dbpass = 'TycKdB7X106OU4GH';
@@ -215,25 +216,20 @@ $app->get('/api/v0/version/{id}', function (Request $request, Response $response
        printf("Connect failed: %s<br />", $mysqli->connect_error);
        exit();
     }
+
     $query = $mysqli->query($sql);
     if ($query) {
+        $data = [];
         while($obj = $query->fetch_object()){
-            // $data[]=[
-            //     "version_id"=>$obj->version_id,
-            //     "version_name"=>$obj->version_name,
-            //     "version_stage"=>$obj->version_stage,
-            //     "version_notes"=>($obj->notes == null) ? "-" : $obj->notes,
-            //     "created_dt"=>$obj->created_dt,
-            // ];
-            array_push($data,[
+            
+            $data[]=[
                 "version_id"=>$obj->version_id,
                 "version_name"=>$obj->version_name,
                 "version_stage"=>$obj->version_stage,
                 "version_notes"=>($obj->notes == null) ? "-" : $obj->notes,
                 "created_dt"=>$obj->created_dt,
-            ]);
+            ];
         }
-        var_dump($data);
         $response->getBody()->write((string)json_encode(
             ["data"=>[$data],"success"=>"true","message"=>"ok"]));
      }
