@@ -321,7 +321,7 @@ $app->post('/api/v0/structure', function (Request $request,Response  $response, 
             }
                 $sql = "insert into roi_company_structures(structure_title,company_id,active,created_dt,notes)values('$structure_title',$company_id,$active,'$created_dt','$notes');";
 
-                var_dump($sql)
+                var_dump($sql);
                
                 $mysqli->query($sql);
                 $last_id = $mysqli->insert_id;
