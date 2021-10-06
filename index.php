@@ -226,6 +226,7 @@ $app->get('/api/v0/version/{id}', function (Request $request, Response $response
                 "created_dt"=>$obj->created_dt,
             ];
         }
+        var_dump($data);
         $response->getBody()->write((string)json_encode(
             ["data"=>[$data],"success"=>"true","message"=>"ok"]));
      }
