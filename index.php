@@ -260,8 +260,8 @@ $app->post('/api/v0/company', function (Request $request,Response  $response, $a
             $contacts = ($params['contacts']=="") ? "NA" : $params['contacts'];
             $contactsEmail = ($params['contactsEmail']=="") ? "NA" : $params['contactsEmail'];
             $contractStart = ($params['contractStart']=='') ? date("Y-m-d") : $params['contractStart'];
-            $contractEnd = ($params['contractEnd']=='') ? date("Y-m-d") : $params['contractStart'];
-            $notes = $params['notes'];
+            $contractEnd = ($params['contractEnd']=='') ? date("Y-m-d") : $params['contractEnd'];
+            $notes = ( $params['notes']=='') ? 'NA' : $params['notes'];
             $structures =  ($params['structure']=='') ? 1 : $params['structure'];
             $created_dt = date("Y-m-d");
             $contactfname = ($params['contactfname']=="") ? "NA" : $params['contactfname'];
