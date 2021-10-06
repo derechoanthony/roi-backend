@@ -202,7 +202,7 @@ $app->get('/api/v0/structure/all', function (Request $request,Response  $respons
 
 //get version
 $app->get('/api/v0/version/{id}', function (Request $request, Response $response, array $arguments): Response {
-// $app->get('/api/v0/version/{id}', function (Request $request, Response $response, array $arguments): Response {
+
 
     $versionId = (int)$arguments['id'];
     $sql = "select * from roi_structure_versions where structure_id = $versionId;";
