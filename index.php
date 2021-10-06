@@ -218,13 +218,20 @@ $app->get('/api/v0/version/{id}', function (Request $request, Response $response
     $query = $mysqli->query($sql);
     if ($query) {
         while($obj = $query->fetch_object()){
-            $data[]=[
+            // $data[]=[
+            //     "version_id"=>$obj->version_id,
+            //     "version_name"=>$obj->version_name,
+            //     "version_stage"=>$obj->version_stage,
+            //     "version_notes"=>($obj->notes == null) ? "-" : $obj->notes,
+            //     "created_dt"=>$obj->created_dt,
+            // ];
+            array_push($data,[
                 "version_id"=>$obj->version_id,
                 "version_name"=>$obj->version_name,
                 "version_stage"=>$obj->version_stage,
                 "version_notes"=>($obj->notes == null) ? "-" : $obj->notes,
                 "created_dt"=>$obj->created_dt,
-            ];
+            ]);
         }
         var_dump($data);
         $response->getBody()->write((string)json_encode(
