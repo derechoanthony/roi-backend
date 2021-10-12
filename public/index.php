@@ -19,10 +19,10 @@ $app = new \Slim\App($settings);
 // Set up dependencies
 require __DIR__ . '/../src/dependencies.php';
 
-// Register middleware
-require __DIR__ . '/../src/Middleware/middleware.php';
-define("UPLOAD_DIR", __DIR__ .'/../asset');
-// Register routes
+// // Register middleware
+// require __DIR__ . '/../src/Middleware/middleware.php';
+// define("UPLOAD_DIR", __DIR__ .'/../asset');
+// // Register routes
 require __DIR__ . '/../src/Routes/routes.php';
 
 // Run app
