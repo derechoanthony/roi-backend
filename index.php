@@ -103,15 +103,9 @@ $app->group('/api/v0/users/{id:[0-9]+}', function (RouteCollectorProxy $group) {
 });
 
 
+//user company list
+$app->get('/api/v0/user/company/{comp_id}', function (Request $request,Response  $response, $args) {
 
-
-
-
-// /**
-//  * List
-//  */
-$app->get('/api/v0/company/all', function (Request $request,Response  $response, $args) {
-    $sql = "select `company_id`,`company_name`, `company_alias`, `active`, `created_dt`,  `licenses`,   `contract_start`, `contractFiles`,`contract_end`,`notes`, `structures`,`created_dt` from roi_companies;";
     $dbhost = 'aws-sandbox-development.cmhzsdmoqjl7.us-east-1.rds.amazonaws.com';
     $dbuser = 'admin';
     $dbpass = 'TycKdB7X106OU4GH';
@@ -120,8 +114,108 @@ $app->get('/api/v0/company/all', function (Request $request,Response  $response,
     // $link = new mysqli($_SERVER['RDS_HOSTNAME'], $_SERVER['RDS_USERNAME'], $_SERVER['RDS_PASSWORD'], $_SERVER['RDS_DB_NAME'], $_SERVER['RDS_PORT']);
 
     // $mysqli = mysqli_connect('aws-sandbox-development.cmhzsdmoqjl7.us-east-1.rds.amazonaws.com', 'admin', 'TycKdB7X106OU4GH', 'roi', 3306);
+    
+    $uid = (int)$args['comp_id'];
+    $sql = "select `first_name`,`last_name`,`username`,`currency` from roi_users where company_id=$uid;";
+    
+    $mysqli = new mysqli($dbhost, $dbuser, $dbpass, $dbname , $port);
+    
+    if($mysqli->connect_errno ) {
+       printf("Connect failed: %s<br />", $mysqli->connect_error);
+       exit();
+    }
+    $query = $mysqli->query($sql);
+    if ($query) {
+        while($obj = $query->fetch_object()){
+            $data[]=[
+                "fname"=>$obj->first_name,
+                "lname"=>$obj->last_name,
+                "username"=>$obj->username,
+                "currency"=>$obj->currency,
+            ];
+        }
+        $response->getBody()->write((string)json_encode(
+            ["data"=>[$data],"success"=>"true","message"=>"ok"]));
+     }
+     if ($mysqli->errno) {
+        $response->getBody()->write((string)json_encode(
+            ["data"=>[],"success"=>"false","message"=>"Could not insert record into table:  $mysqli->error"]));
+     }
+     $mysqli->close();
+     $response->withHeader('Access-Control-Allow-Origin', '*');
+    return $response;
+});
+// user list
+
+$app->get('/api/v0/user/{uid}', function (Request $request,Response  $response, $args) {
+
+    $dbhost = 'aws-sandbox-development.cmhzsdmoqjl7.us-east-1.rds.amazonaws.com';
+    $dbuser = 'admin';
+    $dbpass = 'TycKdB7X106OU4GH';
+    $dbname = 'roi';
+    $port = 3306;
+    // $link = new mysqli($_SERVER['RDS_HOSTNAME'], $_SERVER['RDS_USERNAME'], $_SERVER['RDS_PASSWORD'], $_SERVER['RDS_DB_NAME'], $_SERVER['RDS_PORT']);
+
+    // $mysqli = mysqli_connect('aws-sandbox-development.cmhzsdmoqjl7.us-east-1.rds.amazonaws.com', 'admin', 'TycKdB7X106OU4GH', 'roi', 3306);
+    
+    $uid = (int)$args['uid'];
+    $sql = "select `first_name`,`last_name`,`company_id` from roi_users where user_id=$uid;";
+    
+    $mysqli = new mysqli($dbhost, $dbuser, $dbpass, $dbname , $port);
+    
+    if($mysqli->connect_errno ) {
+       printf("Connect failed: %s<br />", $mysqli->connect_error);
+       exit();
+    }
+    $query = $mysqli->query($sql);
+    if ($query) {
+        while($obj = $query->fetch_object()){
+            $data[]=[
+                "fname"=>$obj->first_name,
+                "lname"=>$obj->last_name,
+                "comp_id"=>$obj->company_id,
+            ];
+        }
+        $response->getBody()->write((string)json_encode(
+            ["data"=>[$data],"success"=>"true","message"=>"ok"]));
+     }
+     if ($mysqli->errno) {
+        $response->getBody()->write((string)json_encode(
+            ["data"=>[],"success"=>"false","message"=>"Could not insert record into table:  $mysqli->error"]));
+     }
+     $mysqli->close();
+     $response->withHeader('Access-Control-Allow-Origin', '*');
+    return $response;
+});
 
 
+// /**
+//  * List
+//  */
+$app->get('/api/v0/company/all/{role}/{uid}', function (Request $request,Response  $response, $args) {
+
+    $dbhost = 'aws-sandbox-development.cmhzsdmoqjl7.us-east-1.rds.amazonaws.com';
+    $dbuser = 'admin';
+    $dbpass = 'TycKdB7X106OU4GH';
+    $dbname = 'roi';
+    $port = 3306;
+    // $link = new mysqli($_SERVER['RDS_HOSTNAME'], $_SERVER['RDS_USERNAME'], $_SERVER['RDS_PASSWORD'], $_SERVER['RDS_DB_NAME'], $_SERVER['RDS_PORT']);
+
+    // $mysqli = mysqli_connect('aws-sandbox-development.cmhzsdmoqjl7.us-east-1.rds.amazonaws.com', 'admin', 'TycKdB7X106OU4GH', 'roi', 3306);
+    
+    $role = (int)$args['role'];
+    $uid = (int)$args['uid'];
+    if($role==1){
+        $sql = "select `company_id`,`company_name`,`users`, `company_alias`, `active`, `created_dt`,  `licenses`,   `contract_start`, `contractFiles`,`contract_end`,`notes`, `structures`,`created_dt` from roi_companies;";
+    }else{
+        $compId = "SELECT company_id FROM roi_users where user_id=$uid;";
+        $mysqli_comp = new mysqli($dbhost, $dbuser, $dbpass, $dbname , $port);
+        $query_comp = $mysqli_comp->query($compId);
+        $obj_comp = $query_comp->fetch_object();
+        
+        $sql = "select `company_id`,`company_name`,`users`, `company_alias`, `active`, `created_dt`,  `licenses`,   `contract_start`, `contractFiles`,`contract_end`,`notes`, `structures`,`created_dt` from roi_companies where company_id=$obj_comp->company_id;";
+        
+    }
     $mysqli = new mysqli($dbhost, $dbuser, $dbpass, $dbname , $port);
     
     if($mysqli->connect_errno ) {
@@ -136,6 +230,7 @@ $app->get('/api/v0/company/all', function (Request $request,Response  $response,
                 "company_name"=>$obj->company_name,
                 "company_alias"=>$obj->company_alias,
                 "active"=>$obj->active,
+                "users"=>$obj->users,
                 "created_dt"=>$obj->created_dt,
                 "licenses"=>$obj->licenses,
                 "contract_start"=>$obj->contract_start,
@@ -381,6 +476,65 @@ $app->post('/api/v0/version', function (Request $request,Response  $response, $a
         $data = ["success"=>false, "data"=>$th, "message"=>"error"];
         $response->getBody()->write((string)json_encode(
             ["data"=>[$data],"success"=>"true","message"=>"ok"]));
+        $response->withHeader('Access-Control-Allow-Origin', '*');
+        return $response;
+    }   
+});
+
+$app->post('/api/v0/add/user', function (Request $request,Response  $response, $args) {
+    try {
+        //code...
+            $params = $request->getParsedBody();
+            $fname = $params['fname'];
+            $lname = $params['lname'];
+            $uname = $params['email'];
+            $role = $params['userType'];
+            $company_id = $params['company_id'];
+            $pwd = '365d38c60c4e98ca5ca6dbc02d396e53';
+            $vcode = '11388c9893335786ab178b4561c729bce92d8db4a099c5452c001a4ed273fd04';
+            $currency = $params['currency'];
+            $created_dt = date("Y-m-d");
+            
+            $dbhost = 'aws-sandbox-development.cmhzsdmoqjl7.us-east-1.rds.amazonaws.com';
+            $dbuser = 'admin';
+            $dbpass = 'TycKdB7X106OU4GH';
+            $dbname = 'roi';
+            $mysqli = new mysqli($dbhost, $dbuser, $dbpass, $dbname);
+            if ($mysqli->connect_errno) {
+                printf("Connect failed: %s<br />", $mysqli->connect_error);
+                exit();
+            }
+            //validate if the company is suitable to add new users
+            $comp_licenses = "select licenses from roi_companies where company_id=$company_id;";
+            $query = $mysqli->query($comp_licenses);
+                if ($query) {
+                    $obj = $query->fetch_object();
+                    if($obj->licenses === NULL || $obj->licenses === 0){
+                        $response->getBody()->write((string)json_encode(
+                            ["data"=>[],"success"=>false,"message"=>"All license are use"]));
+                            
+                    }else{
+                        $sql = "insert into roi_users(username,password,company_id,first_name,last_name,currency,user_role,verification_code) values
+                            ('$uname','$pwd',$company_id,'$fname','$lname','$currency','$role','$vcode');
+                            ";
+                            $mysqli->query($sql);
+                            $last_id = $mysqli->insert_id;
+                            // if($insert_query){
+                            //     $update_licenses = "update roi_companies set licenses = licenses - 1 where company_id=$company_id;";
+                            // }
+
+                            $data = ["uid"=>$last_id,"fname"=>$fname, "lname"=>$lname,"created_dt"=>$created_dt, "company_id"=>$company_id,"role"=>$role];
+                            $response->getBody()->write((string)json_encode(
+                                ["data"=>[$data],"success"=>true,"message"=>"$fname $lname Successfully Added."]));
+                            $response->withHeader('Access-Control-Allow-Origin', '*');
+                    }
+                }
+                return $response;
+        
+    } catch (\Throwable $th) {
+        $data = ["success"=>false, "data"=>$th, "message"=>"error"];
+        $response->getBody()->write((string)json_encode(
+            ["data"=>[$data],"success"=>false,"message"=>"ok"]));
         $response->withHeader('Access-Control-Allow-Origin', '*');
         return $response;
     }   
