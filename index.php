@@ -213,7 +213,10 @@ $app->get('/api/v0/company/all/{role}/{uid}', function (Request $request,Respons
         $query_comp = $mysqli_comp->query($compId);
         $obj_comp = $query_comp->fetch_object();
         
-        $sql = "select `company_id`,`company_name`,`users`, `company_alias`, `active`, `created_dt`,  `licenses`,   `contract_start`, `contractFiles`,`contract_end`,`notes`, `structures`,`created_dt` from roi_companies where company_id=$obj_comp->company_id;";
+        $sql = "select `company_id`,
+            `account_contact`,`company_name`,
+            account_contact_fname, account_contact_lname
+            `users`, `company_alias`, `active`, `created_dt`,  `licenses`,   `contract_start`, `contractFiles`,`contract_end`,`notes`, `structures`,`created_dt` from roi_companies where company_id=$obj_comp->company_id;";
         
     }
     $mysqli = new mysqli($dbhost, $dbuser, $dbpass, $dbname , $port);
@@ -225,12 +228,29 @@ $app->get('/api/v0/company/all/{role}/{uid}', function (Request $request,Respons
     $query = $mysqli->query($sql);
     if ($query) {
         while($obj = $query->fetch_object()){
+            if(is_null($obj->user) ){
+               $user_count = 0;
+            }else{
+                $user_count = $obj->user;
+            }
+            if(is_null($obj->account_contact) ){
+                $account_contact = 'not set';
+             }else{
+                 $account_contact = $obj->account_contact;
+             }
+            if(is_null($obj->account_contact_fname) && is_null($account_contact_lname)){
+                $contact_person = ' - ';
+             }else{
+                 $contact_person = $obj->account_contact_fname.' '.$obj->account_contact_lname;
+             }
             $data[]=[
                 "company_id"=>$obj->company_id,
                 "company_name"=>$obj->company_name,
                 "company_alias"=>$obj->company_alias,
+                "account_contact"=>$account_contact,
+                "contact_person"=>$contact_person,
                 "active"=>$obj->active,
-                "users"=>$obj->users,
+                "users"=>$user_count,
                 "created_dt"=>$obj->created_dt,
                 "licenses"=>$obj->licenses,
                 "contract_start"=>$obj->contract_start,
