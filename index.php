@@ -206,7 +206,7 @@ $app->get('/api/v0/company/all/{role}/{uid}', function (Request $request,Respons
     $role = (int)$args['role'];
     $uid = (int)$args['uid'];
     if($role==1){
-        $sql = "select `company_id`,`company_name`,`users`, `company_alias`, `active`, `created_dt`,  `licenses`,   `contract_start`, `contractFiles`,`contract_end`,`notes`, `structures`,`created_dt` from roi_companies;";
+        $sql = "select `company_id`,`company_name`, `account_contact`,account_contact_fname, account_contact_lname,`users`, `company_alias`, `active`, `created_dt`,  `licenses`,   `contract_start`, `contractFiles`,`contract_end`,`notes`, `structures`,`created_dt` from roi_companies;";
     }else{
         $compId = "SELECT company_id FROM roi_users where user_id=$uid;";
         $mysqli_comp = new mysqli($dbhost, $dbuser, $dbpass, $dbname , $port);
@@ -233,12 +233,13 @@ $app->get('/api/v0/company/all/{role}/{uid}', function (Request $request,Respons
             }else{
                 $user_count = $obj->user;
             }
-            if(is_null($obj->account_contact) ){
-                $account_contact = 'not set';
-             }else{
-                 $account_contact = $obj->account_contact;
-             }
-            if(is_null($obj->account_contact_fname) && is_null($account_contact_lname)){
+            // var_dump($obj->account_contact);
+            // if(is_null($obj->account_contact) ){
+            //     $account_contact = 'not set';
+            //  }else{
+            //      $account_contact = $obj->account_contact;
+            //  }
+            if(is_null($obj->account_contact_fname) && is_null($obj->account_contact_lname)){
                 $contact_person = ' - ';
              }else{
                  $contact_person = $obj->account_contact_fname.' '.$obj->account_contact_lname;
@@ -247,7 +248,7 @@ $app->get('/api/v0/company/all/{role}/{uid}', function (Request $request,Respons
                 "company_id"=>$obj->company_id,
                 "company_name"=>$obj->company_name,
                 "company_alias"=>$obj->company_alias,
-                "account_contact"=>$account_contact,
+                "account_contact"=>$obj->account_contact,
                 "contact_person"=>$contact_person,
                 "active"=>$obj->active,
                 "users"=>$user_count,
