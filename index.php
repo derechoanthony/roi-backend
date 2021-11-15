@@ -161,8 +161,8 @@ $app->get('/api/v0/user/{uid}', function (Request $request,Response  $response, 
     // $mysqli = mysqli_connect('aws-sandbox-development.cmhzsdmoqjl7.us-east-1.rds.amazonaws.com', 'admin', 'TycKdB7X106OU4GH', 'roi', 3306);
     
     $uid = (int)$args['uid'];
-    $sql = "select `user_id`,`first_name`,`last_name`,`company_id` from roi_users where user_id=$uid;";
-    
+    $sql = "select `user_id`,`first_name`,`last_name`,`company_id`,`username`,`currency`,`user_role`  from roi_users where user_id=$uid;";
+    // `user_id`,`first_name`,`last_name`
     $mysqli = new mysqli($dbhost, $dbuser, $dbpass, $dbname , $port);
     
     if($mysqli->connect_errno ) {
@@ -177,6 +177,9 @@ $app->get('/api/v0/user/{uid}', function (Request $request,Response  $response, 
                 "lname"=>$obj->last_name,
                 "comp_id"=>$obj->company_id,
                 "uid"=>$obj->user_id,
+                "username"=>$obj->username,
+                "currency"=>$obj->currency,
+                "user_role"=>$obj->user_role,
             ];
         }
         $response->getBody()->write((string)json_encode(
