@@ -240,11 +240,11 @@ $app->get('/api/v0/company/all/{role}/{uid}', function (Request $request,Respons
                 $user_count = $obj->user;
             }
             // var_dump($obj->account_contact);
-            // if(is_null($obj->account_contact) ){
-            //     $account_contact = 'not set';
-            //  }else{
-            //      $account_contact = $obj->account_contact;
-            //  }
+            if(is_null($obj->licenses) ){
+                $licenses = 0;
+             }else{
+                 $licenses = $obj->licenses;
+             }
             if(is_null($obj->account_contact_fname) && is_null($obj->account_contact_lname)){
                 $contact_person = ' - ';
              }else{
@@ -259,7 +259,7 @@ $app->get('/api/v0/company/all/{role}/{uid}', function (Request $request,Respons
                 "active"=>$obj->active,
                 "users"=>$user_count,
                 "created_dt"=>$obj->created_dt,
-                "licenses"=>$obj->licenses,
+                "licenses"=>$licenses,
                 "contract_start"=>$obj->contract_start,
                 "contractFiles"=>$obj->contractFiles,
                 "contract_end"=>$obj->contract_end,
