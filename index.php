@@ -159,7 +159,7 @@ $app->get('/api/v0/user/{uid}', function (Request $request,Response  $response, 
     // $mysqli = mysqli_connect('aws-sandbox-development.cmhzsdmoqjl7.us-east-1.rds.amazonaws.com', 'admin', 'TycKdB7X106OU4GH', 'roi', 3306);
     
     $uid = (int)$args['uid'];
-    $sql = "select `first_name`,`last_name`,`company_id` from roi_users where user_id=$uid;";
+    $sql = "select `user_id`,`first_name`,`last_name`,`company_id` from roi_users where user_id=$uid;";
     
     $mysqli = new mysqli($dbhost, $dbuser, $dbpass, $dbname , $port);
     
@@ -174,6 +174,7 @@ $app->get('/api/v0/user/{uid}', function (Request $request,Response  $response, 
                 "fname"=>$obj->first_name,
                 "lname"=>$obj->last_name,
                 "comp_id"=>$obj->company_id,
+                "uid"=>$obj->user_id,
             ];
         }
         $response->getBody()->write((string)json_encode(
