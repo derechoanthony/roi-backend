@@ -116,7 +116,7 @@ $app->get('/api/v0/user/company/{comp_id}', function (Request $request,Response 
     // $mysqli = mysqli_connect('aws-sandbox-development.cmhzsdmoqjl7.us-east-1.rds.amazonaws.com', 'admin', 'TycKdB7X106OU4GH', 'roi', 3306);
     
     $uid = (int)$args['comp_id'];
-    $sql = "select `first_name`,`last_name`,`username`,`currency` from roi_users where company_id=$uid;";
+    $sql = "select `user_id`,`first_name`,`last_name`,`username`,`currency` from roi_users where company_id=$uid;";
     
     $mysqli = new mysqli($dbhost, $dbuser, $dbpass, $dbname , $port);
     
@@ -128,6 +128,7 @@ $app->get('/api/v0/user/company/{comp_id}', function (Request $request,Response 
     if ($query) {
         while($obj = $query->fetch_object()){
             $data[]=[
+                "uid"=>$obj->user_id,
                 "fname"=>$obj->first_name,
                 "lname"=>$obj->last_name,
                 "username"=>$obj->username,
