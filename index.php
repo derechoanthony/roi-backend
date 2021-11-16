@@ -257,7 +257,7 @@ $app->get('/api/v0/company/all/{role}/{uid}', function (Request $request,Respons
                 "company_alias"=>$obj->company_alias,
                 "account_contact"=>$obj->account_contact,
                 "contact_person"=>$contact_person,
-                "active"=>$obj->active,
+                "active"=>($obj->active == 1) ? 'Active':'In-Active',
                 "users"=>$user_count,
                 "created_dt"=>$cdate[0],
                 "licenses"=>$licenses,
