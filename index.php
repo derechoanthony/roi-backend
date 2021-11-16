@@ -392,7 +392,8 @@ $app->post('/api/v0/company', function (Request $request,Response  $response, $a
             $created_dt = date("Y-m-d");
             $contactfname = ($params['contactfname']=="") ? "NA" : $params['contactfname'];
             $contactlname = ($params['contactlname']=="") ? "NA" : $params['contactlname'];
-            
+            $users = 0;
+
             $dbhost = 'aws-sandbox-development.cmhzsdmoqjl7.us-east-1.rds.amazonaws.com';
             $dbuser = 'admin';
             $dbpass = 'TycKdB7X106OU4GH';
@@ -403,8 +404,8 @@ $app->post('/api/v0/company', function (Request $request,Response  $response, $a
                 printf("Connect failed: %s<br />", $mysqli->connect_error);
                 exit();
             }
-                $sql = "insert into roi_companies(company_name,company_alias,licenses,account_contact,account_email,contract_start,contract_end,notes,contractFiles,structures,created_dt,account_contact_fname,account_contact_lname) values
-                        ('$companyName','$companyAlias','$license','$contacts','$contactsEmail','$contractStart','$contractEnd','$notes','$filename','$structures','$created_dt','$contactfname','$contactlname');";
+                $sql = "insert into roi_companies(company_name,company_alias,licenses,account_contact,account_email,contract_start,contract_end,notes,contractFiles,structures,created_dt,account_contact_fname,account_contact_lname,users) values
+                        ('$companyName','$companyAlias','$license','$contacts','$contactsEmail','$contractStart','$contractEnd','$notes','$filename','$structures','$created_dt','$contactfname','$contactlname',$users);";
                
                 $mysqli->query($sql);
                 $last_id = $mysqli->insert_id;
