@@ -234,10 +234,10 @@ $app->get('/api/v0/company/all/{role}/{uid}', function (Request $request,Respons
     $query = $mysqli->query($sql);
     if ($query) {
         while($obj = $query->fetch_object()){
-            if(is_null($obj->user) ){
+            if(is_null($obj->users) ){
                $user_count = 0;
             }else{
-                $user_count = $obj->user;
+                $user_count = $obj->users;
             }
             // var_dump($obj->account_contact);
             if(is_null($obj->licenses) ){
@@ -381,7 +381,7 @@ $app->post('/api/v0/company', function (Request $request,Response  $response, $a
         }
             $params = $request->getParsedBody();
             $companyName = $params['companyName'];
-            $companyAlias = $params['companyAlias'];
+            $companyAlias = ($params['companyAlias']=="") ? "NA" : $params['license'];
             $license = ($params['license']=="") ? 0 : $params['license'];
             $contacts = ($params['contacts']=="") ? "NA" : $params['contacts'];
             $contactsEmail = ($params['contactsEmail']=="") ? "NA" : $params['contactsEmail'];
