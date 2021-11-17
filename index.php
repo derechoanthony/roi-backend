@@ -627,13 +627,23 @@ $app->post('/api/v0/add/user', function (Request $request,Response  $response, $
                         $sql = "insert into roi_users(username,password,company_id,first_name,last_name,currency,user_role,verification_code) values
                             ('$uname','$pwd',$company_id,'$fname','$lname','$currency','$role','$vcode');
                             ";
-                            $mysqli->query($sql);
+                            $user_query = $mysqli->query($sql);
                             $last_id = $mysqli->insert_id;
+                            if($user_query){
+                                $updateroi_comp = "update roi_companies set users = users+1  where company_id=".$company_id.";";
+                                $updatequery = $mysqli->query($updateroi_comp);
+                                if($updatequery){
+                                    $data = ["uid"=>$last_id,"fname"=>$fname, "lname"=>$lname,"created_dt"=>$created_dt, "company_id"=>$company_id,"role"=>$role];
+                                    $response->getBody()->write((string)json_encode(
+                                        ["data"=>[$data],"success"=>true,"message"=>"$fname $lname Successfully Added."]));
+                                    $response->withHeader('Access-Control-Allow-Origin', '*');
+                                }
+                            }
 
-                            $data = ["uid"=>$last_id,"fname"=>$fname, "lname"=>$lname,"created_dt"=>$created_dt, "company_id"=>$company_id,"role"=>$role];
-                            $response->getBody()->write((string)json_encode(
-                                ["data"=>[$data],"success"=>true,"message"=>"$fname $lname Successfully Added."]));
-                            $response->withHeader('Access-Control-Allow-Origin', '*');
+
+                            
+
+                            
                     }
                 }
                 return $response;
@@ -712,6 +722,47 @@ $app->post('/api/v0/update/user/{uid}', function (Request $request,Response  $re
 
 
 
+$app->delete('/api/v0/delete/user/{uid}/{comp_id}', function (Request $request,Response  $response, $args) {
+    try {
+        //code...
+            $params = $request->getParsedBody();
+            $uid = (int)$args['uid'];
+            $comp_id = (int)$args['comp_id'];
+            
+            $dbhost = 'aws-sandbox-development.cmhzsdmoqjl7.us-east-1.rds.amazonaws.com';
+            $dbuser = 'admin';
+            $dbpass = 'TycKdB7X106OU4GH';
+            $dbname = 'roi';
+            $mysqli = new mysqli($dbhost, $dbuser, $dbpass, $dbname);
+            if ($mysqli->connect_errno) {
+                printf("Connect failed: %s<br />", $mysqli->connect_error);
+                exit();
+            }
+            //validate if the company is suitable to add new users
+            $remove_user = "DELETE FROM roi_users
+            WHERE user_id = $uid";
+            $query = $mysqli->query($remove_user);
+                if ($query) {
+                   
+
+                    $updateroi_comp = "update roi_companies set users = users-1  where company_id=".$comp_id.";";
+                    $updatequery = $mysqli->query($updateroi_comp);
+                    if($updatequery){
+                         $response->getBody()->write((string)json_encode(
+                            ["success"=>true,"message"=>"Successfully Deleted."]));
+                        $response->withHeader('Access-Control-Allow-Origin', '*');
+                    }
+                }
+                return $response;
+        
+    } catch (\Throwable $th) {
+        $data = ["success"=>false, "data"=>$th, "message"=>"error"];
+        $response->getBody()->write((string)json_encode(
+            ["data"=>[$data],"success"=>false,"message"=>"ok"]));
+        $response->withHeader('Access-Control-Allow-Origin', '*');
+        return $response;
+    }   
+});
 
 
 
