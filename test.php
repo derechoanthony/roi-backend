@@ -5,6 +5,6 @@ $str = "O'Reilly?";
 
 $data = "Gareth Mullin's Bistro Steak &amp; Eggs Brunch";
 $data = str_replace('&amp;',' %26', $data );
-echo $data;
-
+// echo $data;
+echo MD5("test");
 ?>

@@ -599,7 +599,8 @@ $app->post('/api/v0/add/user', function (Request $request,Response  $response, $
             $uname = $params['email'];
             $role = $params['userType'];
             $company_id = $params['company_id'];
-            $pwd = '365d38c60c4e98ca5ca6dbc02d396e53';
+            $pwd = ($params['pwd']=="") ? "365d38c60c4e98ca5ca6dbc02d396e53" : MD5($params['pwd']);
+          
             $vcode = '11388c9893335786ab178b4561c729bce92d8db4a099c5452c001a4ed273fd04';
             $currency = $params['currency'];
             $created_dt = date("Y-m-d");
