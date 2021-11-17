@@ -722,7 +722,7 @@ $app->post('/api/v0/update/user/{uid}', function (Request $request,Response  $re
 
 
 
-$app->delete('/api/v0/delete/user/{uid}/{comp_id}', function (Request $request,Response  $response, $args) {
+$app->get('/api/v0/delete/user/{uid}/{comp_id}', function (Request $request,Response  $response, $args) {
     try {
         //code...
             $params = $request->getParsedBody();
