@@ -364,6 +364,45 @@ $app->get('/api/v0/structure/all', function (Request $request,Response  $respons
 });
 
 
+//get structures
+$app->get('/api/v0/structure/{comp_id}', function (Request $request,Response  $response, $args) {
+    $id = (int)$args['comp_id'];
+    $sql = "select rcs.structure_id, rcs.structure_title, rcs.company_id, rcs.active, rcs.created_dt, rcs.notes, rc.company_name from roi_company_structures as rcs inner join roi_companies as rc on rcs.company_id = rc.company_id and rc.company_id=$id;";
+    $dbhost = 'aws-sandbox-development.cmhzsdmoqjl7.us-east-1.rds.amazonaws.com';
+    $dbuser = 'admin';
+    $dbpass = 'TycKdB7X106OU4GH';
+    $dbname = 'roi';
+    $mysqli = new mysqli($dbhost, $dbuser, $dbpass, $dbname);
+    
+    if($mysqli->connect_errno ) {
+       printf("Connect failed: %s<br />", $mysqli->connect_error);
+       exit();
+    }
+    $query = $mysqli->query($sql);
+    if ($query) {
+        while($obj = $query->fetch_object()){
+            $data[]=[
+                "structure_id"=>$obj->structure_id,
+                "structure_title"=>$obj->structure_title,
+                "company_id"=>$obj->company_id,
+                "active"=>($obj->active == 1) ? "Active" : "In-Active",
+                "created_dt"=>$obj->created_dt,
+                "notes"=>($obj->notes == null) ? "Empty" : $obj->notes,
+                "company_name"=>$obj->company_name
+            ];
+        }
+        $response->getBody()->write((string)json_encode(
+            ["data"=>[$data],"success"=>"true","message"=>"ok"]));
+     }
+     if ($mysqli->errno) {
+        $response->getBody()->write((string)json_encode(
+            ["data"=>[],"success"=>"false","message"=>"Could not insert record into table:  $mysqli->error"]));
+     }
+     $mysqli->close();
+     $response->withHeader('Access-Control-Allow-Origin', '*');
+    return $response;
+});
+
 
 //get version
 $app->get('/api/v0/version/{id}', function (Request $request, Response $response, array $arguments): Response {
