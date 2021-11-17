@@ -101,8 +101,50 @@ $app->group('/api/v0/users/{id:[0-9]+}', function (RouteCollectorProxy $group) {
         return $response;
     });
 });
+//manager user list
+$app->get('/api/v0/user/company/manager/{comp_id}', function (Request $request,Response  $response, $args) {
 
+    $dbhost = 'aws-sandbox-development.cmhzsdmoqjl7.us-east-1.rds.amazonaws.com';
+    $dbuser = 'admin';
+    $dbpass = 'TycKdB7X106OU4GH';
+    $dbname = 'roi';
+    $port = 3306;
+    // $link = new mysqli($_SERVER['RDS_HOSTNAME'], $_SERVER['RDS_USERNAME'], $_SERVER['RDS_PASSWORD'], $_SERVER['RDS_DB_NAME'], $_SERVER['RDS_PORT']);
 
+    // $mysqli = mysqli_connect('aws-sandbox-development.cmhzsdmoqjl7.us-east-1.rds.amazonaws.com', 'admin', 'TycKdB7X106OU4GH', 'roi', 3306);
+    
+    $uid = (int)$args['comp_id'];
+    $sql = "select `user_id`,`first_name`,`last_name`,`username`,`currency`,`user_role` from roi_users where company_id=$uid and user_role=3; ";
+    
+    $mysqli = new mysqli($dbhost, $dbuser, $dbpass, $dbname , $port);
+    
+    if($mysqli->connect_errno ) {
+       printf("Connect failed: %s<br />", $mysqli->connect_error);
+       exit();
+    }
+    $query = $mysqli->query($sql);
+    if ($query) {
+        while($obj = $query->fetch_object()){
+            $data[]=[
+                "uid"=>$obj->user_id,
+                "fname"=>$obj->first_name,
+                "lname"=>$obj->last_name,
+                "username"=>$obj->username,
+                "currency"=>$obj->currency,
+                "user_role"=>$obj->user_role,
+            ];
+        }
+        $response->getBody()->write((string)json_encode(
+            ["data"=>[$data],"success"=>"true","message"=>"ok"]));
+     }
+     if ($mysqli->errno) {
+        $response->getBody()->write((string)json_encode(
+            ["data"=>[],"success"=>"false","message"=>"Could not insert record into table:  $mysqli->error"]));
+     }
+     $mysqli->close();
+     $response->withHeader('Access-Control-Allow-Origin', '*');
+    return $response;
+});
 //user company list
 $app->get('/api/v0/user/company/{comp_id}', function (Request $request,Response  $response, $args) {
 
