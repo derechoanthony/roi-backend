@@ -629,13 +629,73 @@ $app->post('/api/v0/add/user', function (Request $request,Response  $response, $
                             ";
                             $mysqli->query($sql);
                             $last_id = $mysqli->insert_id;
-                            // if($insert_query){
-                            //     $update_licenses = "update roi_companies set licenses = licenses - 1 where company_id=$company_id;";
-                            // }
 
                             $data = ["uid"=>$last_id,"fname"=>$fname, "lname"=>$lname,"created_dt"=>$created_dt, "company_id"=>$company_id,"role"=>$role];
                             $response->getBody()->write((string)json_encode(
                                 ["data"=>[$data],"success"=>true,"message"=>"$fname $lname Successfully Added."]));
+                            $response->withHeader('Access-Control-Allow-Origin', '*');
+                    }
+                }
+                return $response;
+        
+    } catch (\Throwable $th) {
+        $data = ["success"=>false, "data"=>$th, "message"=>"error"];
+        $response->getBody()->write((string)json_encode(
+            ["data"=>[$data],"success"=>false,"message"=>"ok"]));
+        $response->withHeader('Access-Control-Allow-Origin', '*');
+        return $response;
+    }   
+});
+
+$app->post('/api/v0/update/user/{uid}', function (Request $request,Response  $response, $args) {
+    try {
+        //code...
+            $params = $request->getParsedBody();
+            $uid = (int)$args['uid'];
+            $fname = $params['fname'];
+            $lname = $params['lname'];
+            $uname = $params['email'];
+            $role = $params['userType'];
+            $company_id = $params['company_id'];
+            $pwd = $params['pwd'];
+          
+            $vcode = '11388c9893335786ab178b4561c729bce92d8db4a099c5452c001a4ed273fd04';
+            $currency = $params['currency'];
+            $created_dt = date("Y-m-d");
+            
+            $dbhost = 'aws-sandbox-development.cmhzsdmoqjl7.us-east-1.rds.amazonaws.com';
+            $dbuser = 'admin';
+            $dbpass = 'TycKdB7X106OU4GH';
+            $dbname = 'roi';
+            $mysqli = new mysqli($dbhost, $dbuser, $dbpass, $dbname);
+            if ($mysqli->connect_errno) {
+                printf("Connect failed: %s<br />", $mysqli->connect_error);
+                exit();
+            }
+            //validate if the company is suitable to add new users
+            $comp_licenses = "select licenses from roi_companies where company_id=$company_id;";
+            $query = $mysqli->query($comp_licenses);
+                if ($query) {
+                    $obj = $query->fetch_object();
+                    if($obj->licenses === NULL || $obj->licenses === 0){
+                        $response->getBody()->write((string)json_encode(
+                            ["data"=>[],"success"=>false,"message"=>"All license are use"]));
+                            
+                    }else{
+                        if($pwd == ""){
+                            $userpwd = "";
+                        }else{
+                            $userpwd = ",password='$pwd'";
+                        }
+    
+                        $sql = "update roi_users set username='$uname' $userpwd ,company_id=$company_id,first_name='$fname',last_name='$lname',currency='$currency',user_role='$role' where user_id=$uid;
+                            ";
+                            $mysqli->query($sql);
+                            $last_id = $uid;
+
+                            $data = ["uid"=>$last_id,"fname"=>$fname, "lname"=>$lname,"created_dt"=>$created_dt, "company_id"=>$company_id,"role"=>$role];
+                            $response->getBody()->write((string)json_encode(
+                                ["data"=>[$data],"success"=>true,"message"=>"$fname $lname Successfully Updated."]));
                             $response->withHeader('Access-Control-Allow-Origin', '*');
                     }
                 }
