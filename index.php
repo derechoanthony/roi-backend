@@ -849,7 +849,7 @@ $app->get('/api/v0/file/download/{fname}', function (Request $request, Response 
     header("Content-Type: application/pdf", true);
     header("Connection: keep-alive", true);
 
-    $fileName = './uploads/'.$args.'';
+    $fileName = './uploads/'.$args['fname'].'';
     $file = fopen($fileName,'r');
 
     while (($buffer = fgets($file, 4096)) !== false) {
