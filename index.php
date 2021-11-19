@@ -335,7 +335,7 @@ $app->get('/api/v0/company/{compid}', function (Request $request,Response  $resp
     
     $compid = (int)$args['compid'];
    
-    $sql = "select `company_id`,`company_name`, `account_contact`,account_contact_fname, account_contact_lname,`users`, `company_alias`, `active`, `created_dt`,  `licenses`,   `contract_start`, `contractFiles`,`contract_end`,`notes`, `structures`,`created_dt` from 
+    $sql = "select `company_id`,`company_name`, `account_contact`,account_contact_fname, account_email, account_contact_lname,`users`, `company_alias`, `active`, `created_dt`,  `licenses`,   `contract_start`, `contractFiles`,`contract_end`,`notes`, `structures`,`created_dt` from 
     roi_companies where company_id=$compid;";
     $mysqli = new mysqli($dbhost, $dbuser, $dbpass, $dbname , $port);
     
@@ -371,6 +371,9 @@ $app->get('/api/v0/company/{compid}', function (Request $request,Response  $resp
                 "contact_person"=>$contact_person,
                 "active"=>($obj->active == 1) ? 'Active':'In-Active',
                 "users"=>$user_count,
+                "account_contact_fname"=>$obj->account_contact_fname,
+                "account_email"=>$obj->account_email,
+                "account_contact_lname"=>$obj->account_contact_lname,
                 "created_dt"=>$cdate[0],
                 "licenses"=>$licenses,
                 "contract_start"=>$obj->contract_start,
