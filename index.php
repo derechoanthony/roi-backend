@@ -321,7 +321,76 @@ $app->get('/api/v0/company/all/{role}/{uid}', function (Request $request,Respons
      $response->withHeader('Access-Control-Allow-Origin', '*');
     return $response;
 });
+//company info
+$app->get('/api/v0/company/{compid}', function (Request $request,Response  $response, $args) {
 
+    $dbhost = 'aws-sandbox-development.cmhzsdmoqjl7.us-east-1.rds.amazonaws.com';
+    $dbuser = 'admin';
+    $dbpass = 'TycKdB7X106OU4GH';
+    $dbname = 'roi';
+    $port = 3306;
+    // $link = new mysqli($_SERVER['RDS_HOSTNAME'], $_SERVER['RDS_USERNAME'], $_SERVER['RDS_PASSWORD'], $_SERVER['RDS_DB_NAME'], $_SERVER['RDS_PORT']);
+
+    // $mysqli = mysqli_connect('aws-sandbox-development.cmhzsdmoqjl7.us-east-1.rds.amazonaws.com', 'admin', 'TycKdB7X106OU4GH', 'roi', 3306);
+    
+    $compid = (int)$args['compid'];
+   
+    $sql = "select `company_id`,`company_name`, `account_contact`,account_contact_fname, account_contact_lname,`users`, `company_alias`, `active`, `created_dt`,  `licenses`,   `contract_start`, `contractFiles`,`contract_end`,`notes`, `structures`,`created_dt` from 
+    roi_companies where company_id=$compid;";
+    $mysqli = new mysqli($dbhost, $dbuser, $dbpass, $dbname , $port);
+    
+    if($mysqli->connect_errno ) {
+       printf("Connect failed: %s<br />", $mysqli->connect_error);
+       exit();
+    }
+    $query = $mysqli->query($sql);
+    if ($query) {
+        while($obj = $query->fetch_object()){
+            if(is_null($obj->users) ){
+               $user_count = 0;
+            }else{
+                $user_count = $obj->users;
+            }
+            // var_dump($obj->account_contact);
+            if(is_null($obj->licenses) ){
+                $licenses = 0;
+             }else{
+                 $licenses = $obj->licenses;
+             }
+            if(is_null($obj->account_contact_fname) && is_null($obj->account_contact_lname)){
+                $contact_person = ' - ';
+             }else{
+                 $contact_person = $obj->account_contact_fname.' '.$obj->account_contact_lname;
+             }
+             $cdate = explode(" ",$obj->created_dt);
+            $data[]=[
+                "company_id"=>$obj->company_id,
+                "company_name"=>$obj->company_name,
+                "company_alias"=>$obj->company_alias,
+                "account_contact"=>$obj->account_contact,
+                "contact_person"=>$contact_person,
+                "active"=>($obj->active == 1) ? 'Active':'In-Active',
+                "users"=>$user_count,
+                "created_dt"=>$cdate[0],
+                "licenses"=>$licenses,
+                "contract_start"=>$obj->contract_start,
+                "contractFiles"=>$obj->contractFiles,
+                "contract_end"=>$obj->contract_end,
+                "notes"=>$obj->notes,
+                "structures"=>$obj->structures,
+            ];
+        }
+        $response->getBody()->write((string)json_encode(
+            ["data"=>[$data],"success"=>"true","message"=>"ok"]));
+     }
+     if ($mysqli->errno) {
+        $response->getBody()->write((string)json_encode(
+            ["data"=>[],"success"=>"false","message"=>"Could not insert record into table:  $mysqli->error"]));
+     }
+     $mysqli->close();
+     $response->withHeader('Access-Control-Allow-Origin', '*');
+    return $response;
+});
 
 
 
