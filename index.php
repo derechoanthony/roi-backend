@@ -859,30 +859,30 @@ $app->get('/api/v0/file/download/{uid}', function (Request $request, Response $r
         $obj = $query->fetch_object();
 
         if($obj->contractFiles != ""){
-            var_dump($obj->contractFiles);
-            // set_time_limit(60 * 5);
-            // ini_set('max_execution_time', 60 * 5);
-            // header("Content-Type: application/pdf", true);
-            // header("Transfer-Encoding: chunked", true);
-            // header("Content-Encoding: chunked", true);
-            // header("Connection: keep-alive", true);
-            // // var_dump($args['fname']);
-            // var_dump($obj->contracFiles);
-            // $fileName = './uploads/'.$obj->contractFiles.'';
-            // $file = fopen($fileName,'r');
+            // var_dump($obj->contractFiles);
+            set_time_limit(60 * 5);
+            ini_set('max_execution_time', 60 * 5);
+            header("Content-Type: application/pdf", true);
+            header("Transfer-Encoding: chunked", true);
+            header("Content-Encoding: chunked", true);
+            header("Connection: keep-alive", true);
+            // var_dump($args['fname']);
+            var_dump($obj->contracFiles);
+            $fileName = './uploads/'.$obj->contractFiles.'';
+            $file = fopen($fileName,'r');
 
-            // while (($buffer = fgets($file, 4096)) !== false) {
-            //     ob_start();
-            //     echo sprintf("%x\r\n%s\r\n", strlen($buffer), $buffer);
-            //     ob_end_flush();
-            //     //10 milliseconds
-            //     usleep(10 * 1000);
-            // }
+            while (($buffer = fgets($file, 4096)) !== false) {
+                ob_start();
+                echo sprintf("%x\r\n%s\r\n", strlen($buffer), $buffer);
+                ob_end_flush();
+                //10 milliseconds
+                usleep(10 * 1000);
+            }
 
-            // fclose($file);
+            fclose($file);
 
-            // // Stop slim to handle the response
-            // exit;
+            // Stop slim to handle the response
+            exit;
         }
         
      }
