@@ -848,7 +848,7 @@ $app->get('/api/v0/file/download/{fname}', function (Request $request, Response 
     header("Content-Encoding: chunked", true);
     header("Content-Type: application/pdf", true);
     header("Connection: keep-alive", true);
-
+    var_dump($args['fname']);
     $fileName = './uploads/'.$args['fname'].'';
     $file = fopen($fileName,'r');
 
