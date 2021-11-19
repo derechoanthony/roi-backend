@@ -8,6 +8,8 @@ use Slim\Factory\AppFactory;
 use Slim\Routing\RouteCollectorProxy;
 use Slim\Routing\RouteContext;
 
+use Slim\Http\Stream;
+
 require_once __DIR__ . '/vendor/autoload.php';
 
 $app = AppFactory::create();
@@ -836,6 +838,33 @@ $app->get('/api/v0/delete/user/{uid}/{comp_id}', function (Request $request,Resp
     }   
 });
 
+
+
+$app->get('/api/v0/file/download/{fname}', function (Request $request, Response $response,$args) {
+    set_time_limit(60 * 5);
+    ini_set('max_execution_time', 60 * 5);
+
+    header("Transfer-Encoding: chunked", true);
+    header("Content-Encoding: chunked", true);
+    header("Content-Type: application/pdf", true);
+    header("Connection: keep-alive", true);
+
+    $fileName = './uploads/'.$args.'';
+    $file = fopen($fileName,'r');
+
+    while (($buffer = fgets($file, 4096)) !== false) {
+	    ob_start();
+        echo sprintf("%x\r\n%s\r\n", strlen($buffer), $buffer);
+        ob_end_flush();
+        //10 milliseconds
+        usleep(10 * 1000);
+    }
+
+    fclose($file);
+
+    // Stop slim to handle the response
+    exit;
+});
 
 
 
