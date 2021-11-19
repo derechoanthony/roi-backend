@@ -868,7 +868,7 @@ $app->get('/api/v0/file/download/{uid}', function (Request $request, Response $r
             header("Connection: keep-alive", true);
             // var_dump($args['fname']);
             var_dump($obj->contracFiles);
-            $fileName = './uploads/'.$obj->contractFiles.'';
+            $fileName = './uploads/79e3b3d2ac294150.pdf';
             $file = fopen($fileName,'r');
 
             while (($buffer = fgets($file, 4096)) !== false) {
