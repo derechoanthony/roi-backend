@@ -200,10 +200,7 @@ $app->get('/api/v0/user/{uid}', function (Request $request,Response  $response, 
     $dbpass = 'TycKdB7X106OU4GH';
     $dbname = 'roi';
     $port = 3306;
-    // $link = new mysqli($_SERVER['RDS_HOSTNAME'], $_SERVER['RDS_USERNAME'], $_SERVER['RDS_PASSWORD'], $_SERVER['RDS_DB_NAME'], $_SERVER['RDS_PORT']);
 
-    // $mysqli = mysqli_connect('aws-sandbox-development.cmhzsdmoqjl7.us-east-1.rds.amazonaws.com', 'admin', 'TycKdB7X106OU4GH', 'roi', 3306);
-    
     $uid = (int)$args['uid'];
     $sql = "select `user_id`,`first_name`,`last_name`,`company_id`,`username`,`currency`,`user_role`  from roi_users where user_id=$uid;";
     // `user_id`,`first_name`,`last_name`
@@ -840,30 +837,56 @@ $app->get('/api/v0/delete/user/{uid}/{comp_id}', function (Request $request,Resp
 
 
 
-$app->get('/api/v0/file/download/{fname}', function (Request $request, Response $response,$args) {
-    set_time_limit(60 * 5);
-    ini_set('max_execution_time', 60 * 5);
-
-    header("Transfer-Encoding: chunked", true);
-    header("Content-Encoding: chunked", true);
-    header("Content-Type: application/pdf", true);
-    header("Connection: keep-alive", true);
-    var_dump($args['fname']);
-    $fileName = './uploads/'.$args['fname'].'';
-    $file = fopen($fileName,'r');
-
-    while (($buffer = fgets($file, 4096)) !== false) {
-	    ob_start();
-        echo sprintf("%x\r\n%s\r\n", strlen($buffer), $buffer);
-        ob_end_flush();
-        //10 milliseconds
-        usleep(10 * 1000);
+$app->get('/api/v0/file/download/{uid}', function (Request $request, Response $response,$args) {
+    
+    $dbhost = 'aws-sandbox-development.cmhzsdmoqjl7.us-east-1.rds.amazonaws.com';
+    $dbuser = 'admin';
+    $dbpass = 'TycKdB7X106OU4GH';
+    $dbname = 'roi';
+    $port = 3306;
+    
+    $uid = (int)$args['uid'];
+    $sql = "select `contractFiles`  from roi_companies where company_id=$uid;";
+    $mysqli = new mysqli($dbhost, $dbuser, $dbpass, $dbname , $port);
+    
+    if($mysqli->connect_errno ) {
+       printf("Connect failed: %s<br />", $mysqli->connect_error);
+       exit();
     }
+    $query = $mysqli->query($sql);
+    // var_dump($query);
+    if ($query) {
+        $obj = $query->fetch_object();
 
-    fclose($file);
+        if($obj->contractFiles != ""){
+            var_dump($obj->contractFiles);
+            // set_time_limit(60 * 5);
+            // ini_set('max_execution_time', 60 * 5);
+            // header("Content-Type: application/pdf", true);
+            // header("Transfer-Encoding: chunked", true);
+            // header("Content-Encoding: chunked", true);
+            // header("Connection: keep-alive", true);
+            // // var_dump($args['fname']);
+            // var_dump($obj->contracFiles);
+            // $fileName = './uploads/'.$obj->contractFiles.'';
+            // $file = fopen($fileName,'r');
 
-    // Stop slim to handle the response
-    exit;
+            // while (($buffer = fgets($file, 4096)) !== false) {
+            //     ob_start();
+            //     echo sprintf("%x\r\n%s\r\n", strlen($buffer), $buffer);
+            //     ob_end_flush();
+            //     //10 milliseconds
+            //     usleep(10 * 1000);
+            // }
+
+            // fclose($file);
+
+            // // Stop slim to handle the response
+            // exit;
+        }
+        
+     }
+    
 });
 
 
