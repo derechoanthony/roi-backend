@@ -843,13 +843,7 @@ $app->post('/api/v0/company/edit/{comp_id}', function (Request $request,Response
             licenses =$license,
             account_contact = '$contacts',
             account_email ='$contactsEmail',
-            contract_start ='$contractStart',
-            contract_end='$contractEnd',
-            notes='$notes',
-            contractFiles='$filename',
-            structures='$structures',                
-            account_contact_fname='$contactfname',
-            account_contact_lname='$contactlname'
+            structures='$structures',       
             where company_id=$comp_id";
             $mysqli->query($sql);
                 $data = ["company_id"=>$comp_id];
