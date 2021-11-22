@@ -840,7 +840,7 @@ $app->post('/api/v0/company/edit/{comp_id}', function (Request $request,Response
             $sql = "update roi_companies set  
             company_name = '$companyName',
             company_alias = '$companyAlias',
-            licenses ='$license',
+            licenses =$license,
             account_contact = '$contacts',
             account_email ='$contactsEmail',
             contract_start ='$contractStart',
@@ -851,7 +851,7 @@ $app->post('/api/v0/company/edit/{comp_id}', function (Request $request,Response
             account_contact_fname='$contactfname',
             account_contact_lname='$contactlname'
             where company_id=$comp_id";
-            var_dump($sql);
+            $mysqli->query($sql);
                 $data = ["company_id"=>$comp_id];
                 $response->getBody()->write((string)json_encode(
                     ["data"=>[$data],"success"=>"true","message"=>"ok"]));
