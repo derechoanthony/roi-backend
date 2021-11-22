@@ -798,22 +798,22 @@ $app->get('/api/v0/edit/user/{uid}/{comp_id}', function (Request $request,Respon
 });
 //
 //edit company
-$app->get('/api/v0/edit/company/{comp_id}', function (Request $request,Response  $response, $args) {
+$app->post('/api/v0/company/edit/{comp_id}', function (Request $request,Response  $response, $args) {
     try {
         //code...
         $haveFile = true;
-        $comp_id = (int)$args['comp_id'];
-        $uploadedFiles = $request->getUploadedFiles();
-        $uploadedFile = (array)($request->getUploadedFiles()['uploadFile'] ?? []);
+        // $uploadedFiles = $request->getUploadedFiles();
+        // $uploadedFile = (array)($request->getUploadedFiles()['uploadFile'] ?? []);
         $filename = "";
-        if ($uploadedFile) {
-            $directory = './uploads';
-            $uploadedFile = $uploadedFiles['uploadFile'];
-            if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
-                $filename = moveUploadedFile($directory, $uploadedFile);
-            } 
-        }
+        // if ($uploadedFile) {
+        //     $directory = './uploads';
+        //     $uploadedFile = $uploadedFiles['uploadFile'];
+        //     if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
+        //         $filename = moveUploadedFile($directory, $uploadedFile);
+        //     } 
+        // }
             $params = $request->getParsedBody();
+            $comp_id = (int)$args['comp_id'];
             $companyName = $params['companyName'];
             $companyAlias = ($params['companyAlias']=="") ? "NA" : $params['license'];
             $license = ($params['license']=="") ? 0 : $params['license'];
@@ -837,24 +837,21 @@ $app->get('/api/v0/edit/company/{comp_id}', function (Request $request,Response 
                 printf("Connect failed: %s<br />", $mysqli->connect_error);
                 exit();
             }
-                // $sql = "insert into roi_companies(company_name,company_alias,licenses,account_contact,account_email,contract_start,contract_end,notes,contractFiles,structures,created_dt,account_contact_fname,account_contact_lname) values
-                //         (,);";
-                $sql = "update roi_companies set  
-                company_name = '$companyName',
-                company_alias = '$companyAlias',
-                licenses ='$license',
-                account_contact = '$contacts',
-                account_email ='$contactsEmail',
-                contract_start ='$contractStart',
-                contract_end='$contractEnd',
-                notes='$notes',
-                contractFiles='$filename',
-                structures='$structures',                
-                account_contact_fname='$contactfname',
-                account_contact_lname='$contactlname'
-                where company_id=$comp_id";
-                $mysqli->query($sql);
-                // $last_id = $mysqli->insert_id;
+            $sql = "update roi_companies set  
+            company_name = '$companyName',
+            company_alias = '$companyAlias',
+            licenses ='$license',
+            account_contact = '$contacts',
+            account_email ='$contactsEmail',
+            contract_start ='$contractStart',
+            contract_end='$contractEnd',
+            notes='$notes',
+            contractFiles='$filename',
+            structures='$structures',                
+            account_contact_fname='$contactfname',
+            account_contact_lname='$contactlname'
+            where company_id=$comp_id";
+            var_dump($sql);
                 $data = ["company_id"=>$comp_id];
                 $response->getBody()->write((string)json_encode(
                     ["data"=>[$data],"success"=>"true","message"=>"ok"]));
@@ -867,8 +864,72 @@ $app->get('/api/v0/edit/company/{comp_id}', function (Request $request,Response 
             ["data"=>[$data],"success"=>"true","message"=>"ok"]));
         $response->withHeader('Access-Control-Allow-Origin', '*');
         return $response;
-    } 
+    }   
 });
+// $app->post('/api/v0/edit/company/{comp_id}', function (Request $request,Response  $response, $args) {
+//     try {
+//         //code...
+//         $haveFile = true;
+//         $comp_id = (int)$args['comp_id'];
+//         $filename = "";
+        
+//         $params = $request->getParsedBody();
+//             $companyName = $params['companyName'];
+//             $companyAlias = ($params['companyAlias']=="") ? "NA" : $params['license'];
+//             $license = ($params['license']=="") ? 0 : $params['license'];
+//             $contacts = ($params['contacts']=="") ? "NA" : $params['contacts'];
+//             $contactsEmail = ($params['contactsEmail']=="") ? "NA" : $params['contactsEmail'];
+//             $contractStart = ($params['contractStart']=='') ? date("Y-m-d") : $params['contractStart'];
+//             $contractEnd = ($params['contractEnd']=='') ? date("Y-m-d") : $params['contractEnd'];
+//             $notes = ( $params['notes']=='') ? 'NA' : $params['notes'];
+//             $structures =  ($params['structure']=='') ? 1 : $params['structure'];
+//             $created_dt = date("Y-m-d");
+//             $contactfname = ($params['contactfname']=="") ? "NA" : $params['contactfname'];
+//             $contactlname = ($params['contactlname']=="") ? "NA" : $params['contactlname'];
+            
+//             $dbhost = 'aws-sandbox-development.cmhzsdmoqjl7.us-east-1.rds.amazonaws.com';
+//             $dbuser = 'admin';
+//             $dbpass = 'TycKdB7X106OU4GH';
+//             $dbname = 'roi';
+//             $mysqli = new mysqli($dbhost, $dbuser, $dbpass, $dbname);
+        
+//             if ($mysqli->connect_errno) {
+//                 printf("Connect failed: %s<br />", $mysqli->connect_error);
+//                 exit();
+//             }
+//                 // $sql = "insert into roi_companies(company_name,company_alias,licenses,account_contact,account_email,contract_start,contract_end,notes,contractFiles,structures,created_dt,account_contact_fname,account_contact_lname) values
+//                 //         (,);";
+//                 $sql = "update roi_companies set  
+//                 company_name = '$companyName',
+//                 company_alias = '$companyAlias',
+//                 licenses ='$license',
+//                 account_contact = '$contacts',
+//                 account_email ='$contactsEmail',
+//                 contract_start ='$contractStart',
+//                 contract_end='$contractEnd',
+//                 notes='$notes',
+//                 contractFiles='$filename',
+//                 structures='$structures',                
+//                 account_contact_fname='$contactfname',
+//                 account_contact_lname='$contactlname'
+//                 where company_id=$comp_id";
+//                 var_dump($sql);
+//                 // $mysqli->query($sql);
+//                 // $last_id = $mysqli->insert_id;
+//                 $data = ["company_id"=>$comp_id];
+//                 $response->getBody()->write((string)json_encode(
+//                     ["data"=>[$data],"success"=>"true","message"=>"ok"]));
+//                 $response->withHeader('Access-Control-Allow-Origin', '*');
+//                 return $response;
+        
+//     } catch (\Throwable $th) {
+//         $data = ["success"=>false, "data"=>$th, "message"=>"error"];
+//         $response->getBody()->write((string)json_encode(
+//             ["data"=>[$data],"success"=>"true","message"=>"ok"]));
+//         $response->withHeader('Access-Control-Allow-Origin', '*');
+//         return $response;
+//     } 
+// });
 
 
 
