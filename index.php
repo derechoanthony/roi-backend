@@ -843,8 +843,10 @@ $app->post('/api/v0/company/edit/{comp_id}', function (Request $request,Response
             licenses =$license,
             account_contact = '$contacts',
             account_email ='$contactsEmail',
-            structures='$structures',       
+            account_contact_fname='$contactfname',
+            account_contact_lname='$contactlname'
             where company_id=$comp_id";
+            // var_dump($sql);
             $mysqli->query($sql);
                 $data = ["company_id"=>$comp_id];
                 $response->getBody()->write((string)json_encode(
