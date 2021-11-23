@@ -481,7 +481,7 @@ $app->get('/api/v0/structure/preview/{structure_id}', function (Request $request
     $id = (int)$args['structure_id'];
     $sql = "select rcs.structure_id, rcs.structure_title, rcs.company_id, rcs.active, rcs.created_dt, rcs.notes, rc.company_name 
     from roi_company_structures as rcs inner join roi_companies as rc on rcs.company_id = rc.company_id 
-    and rc.structure_id=$id;";
+    and rcs.structure_id=$id;";
     $dbhost = 'aws-sandbox-development.cmhzsdmoqjl7.us-east-1.rds.amazonaws.com';
     $dbuser = 'admin';
     $dbpass = 'TycKdB7X106OU4GH';
