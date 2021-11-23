@@ -438,7 +438,50 @@ $app->get('/api/v0/structure/all', function (Request $request,Response  $respons
 //get structures
 $app->get('/api/v0/structure/{comp_id}', function (Request $request,Response  $response, $args) {
     $id = (int)$args['comp_id'];
-    $sql = "select rcs.structure_id, rcs.structure_title, rcs.company_id, rcs.active, rcs.created_dt, rcs.notes, rc.company_name from roi_company_structures as rcs inner join roi_companies as rc on rcs.company_id = rc.company_id and rc.company_id=$id;";
+    $sql = "select rcs.structure_id, rcs.structure_title, rcs.company_id, rcs.active, rcs.created_dt, rcs.notes, rc.company_name 
+    from roi_company_structures as rcs inner join roi_companies as rc on rcs.company_id = rc.company_id 
+    and rc.company_id=$id;";
+    $dbhost = 'aws-sandbox-development.cmhzsdmoqjl7.us-east-1.rds.amazonaws.com';
+    $dbuser = 'admin';
+    $dbpass = 'TycKdB7X106OU4GH';
+    $dbname = 'roi';
+    $mysqli = new mysqli($dbhost, $dbuser, $dbpass, $dbname);
+    
+    if($mysqli->connect_errno ) {
+       printf("Connect failed: %s<br />", $mysqli->connect_error);
+       exit();
+    }
+    $query = $mysqli->query($sql);
+    if ($query) {
+        while($obj = $query->fetch_object()){
+            $data[]=[
+                "structure_id"=>$obj->structure_id,
+                "structure_title"=>$obj->structure_title,
+                "company_id"=>$obj->company_id,
+                "active"=>($obj->active == 1) ? "Active" : "In-Active",
+                "created_dt"=>$obj->created_dt,
+                "notes"=>($obj->notes == null) ? "Empty" : $obj->notes,
+                "company_name"=>$obj->company_name
+            ];
+        }
+        $response->getBody()->write((string)json_encode(
+            ["data"=>[$data],"success"=>"true","message"=>"ok"]));
+     }
+     if ($mysqli->errno) {
+        $response->getBody()->write((string)json_encode(
+            ["data"=>[],"success"=>"false","message"=>"Could not insert record into table:  $mysqli->error"]));
+     }
+     $mysqli->close();
+     $response->withHeader('Access-Control-Allow-Origin', '*');
+    return $response;
+});
+
+//get structures
+$app->get('/api/v0/structure/preview/{structure_id}', function (Request $request,Response  $response, $args) {
+    $id = (int)$args['structure_id'];
+    $sql = "select rcs.structure_id, rcs.structure_title, rcs.company_id, rcs.active, rcs.created_dt, rcs.notes, rc.company_name 
+    from roi_company_structures as rcs inner join roi_companies as rc on rcs.company_id = rc.company_id 
+    and rc.structure_id=$id;";
     $dbhost = 'aws-sandbox-development.cmhzsdmoqjl7.us-east-1.rds.amazonaws.com';
     $dbuser = 'admin';
     $dbpass = 'TycKdB7X106OU4GH';
@@ -599,6 +642,55 @@ $app->post('/api/v0/structure', function (Request $request,Response  $response, 
                 exit();
             }
                 $sql = "insert into roi_company_structures(structure_title,company_id,active,created_dt,notes)values('$structure_title',$company_id,$active,'$created_dt','$notes');";             
+               
+                $mysqli->query($sql);
+                $last_id = $mysqli->insert_id;
+
+                $data = ["structure_id"=>$last_id,"company_id"=>$company_id, "title"=>$structure_title,"status"=>$active, "created_dt"=>$created_dt, "notes"=>$notes];
+                $response->getBody()->write((string)json_encode(
+                    ["data"=>[$data],"success"=>"true","message"=>"ok"]));
+                $response->withHeader('Access-Control-Allow-Origin', '*');
+                return $response;
+        
+    } catch (\Throwable $th) {
+        $data = ["success"=>false, "data"=>$th, "message"=>"error"];
+        $response->getBody()->write((string)json_encode(
+            ["data"=>[$data],"success"=>"true","message"=>"ok"]));
+        $response->withHeader('Access-Control-Allow-Origin', '*');
+        return $response;
+    }   
+});
+
+//edit template
+$app->put('/api/v0/structure/{structure_id}', function (Request $request,Response  $response, $args) {
+    try {
+        //code...
+            $params = $request->getParsedBody();
+            $id = (int)$args['structure_id'];
+            $structure_title = $params['templateName'];
+            $company_id = $params['tplcompanyId'];
+            $active = ($params['templateStatus'] == '') ? 1 : $params['templateStatus'];
+            $notes = $params['templateNotes'];
+            $created_dt = date("Y-m-d");
+            
+            $dbhost = 'aws-sandbox-development.cmhzsdmoqjl7.us-east-1.rds.amazonaws.com';
+            $dbuser = 'admin';
+            $dbpass = 'TycKdB7X106OU4GH';
+            $dbname = 'roi';
+            $mysqli = new mysqli($dbhost, $dbuser, $dbpass, $dbname);
+        
+            if ($mysqli->connect_errno) {
+                printf("Connect failed: %s<br />", $mysqli->connect_error);
+                exit();
+            }
+            //insert into roi_company_structures(structure_title,company_id,active,created_dt,notes)
+            // values(,,,'$created_dt',);"
+                $sql = "set roi_company_structures
+                set 
+                structure_title = '$structure_title',
+                active = $active,
+                notes = '$notes'
+                where structure_id = $id";             
                
                 $mysqli->query($sql);
                 $last_id = $mysqli->insert_id;
