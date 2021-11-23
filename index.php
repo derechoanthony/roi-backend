@@ -499,7 +499,7 @@ $app->get('/api/v0/structure/preview/{structure_id}', function (Request $request
                 "structure_id"=>$obj->structure_id,
                 "structure_title"=>$obj->structure_title,
                 "company_id"=>$obj->company_id,
-                "active"=>($obj->active == 1) ? "Active" : "In-Active",
+                "active"=>$obj->active,
                 "created_dt"=>$obj->created_dt,
                 "notes"=>($obj->notes == null) ? "Empty" : $obj->notes,
                 "company_name"=>$obj->company_name
