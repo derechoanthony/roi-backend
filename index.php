@@ -662,7 +662,7 @@ $app->post('/api/v0/structure', function (Request $request,Response  $response, 
 });
 
 //edit template
-$app->put('/api/v0/structure/{structure_id}', function (Request $request,Response  $response, $args) {
+$app->post('/api/v0/structure/{structure_id}', function (Request $request,Response  $response, $args) {
     try {
         //code...
             $params = $request->getParsedBody();
@@ -685,12 +685,13 @@ $app->put('/api/v0/structure/{structure_id}', function (Request $request,Respons
             }
             //insert into roi_company_structures(structure_title,company_id,active,created_dt,notes)
             // values(,,,'$created_dt',);"
-                $sql = "set roi_company_structures
+                $sql = "update roi_company_structures
                 set 
                 structure_title = '$structure_title',
                 active = $active,
                 notes = '$notes'
-                where structure_id = $id";             
+                where structure_id = $id";       
+                var_dump($sql);      
                
                 $mysqli->query($sql);
                 $last_id = $mysqli->insert_id;
