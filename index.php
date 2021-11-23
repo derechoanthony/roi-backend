@@ -690,8 +690,7 @@ $app->post('/api/v0/structure/{structure_id}', function (Request $request,Respon
                 structure_title = '$structure_title',
                 active = $active,
                 notes = '$notes'
-                where structure_id = $id";       
-                var_dump($sql);      
+                where structure_id = $id";    
                
                 $mysqli->query($sql);
                 $last_id = $mysqli->insert_id;
@@ -699,6 +698,43 @@ $app->post('/api/v0/structure/{structure_id}', function (Request $request,Respon
                 $data = ["structure_id"=>$last_id,"company_id"=>$company_id, "title"=>$structure_title,"status"=>$active, "created_dt"=>$created_dt, "notes"=>$notes];
                 $response->getBody()->write((string)json_encode(
                     ["data"=>[$data],"success"=>"true","message"=>"ok"]));
+                $response->withHeader('Access-Control-Allow-Origin', '*');
+                return $response;
+        
+    } catch (\Throwable $th) {
+        $data = ["success"=>false, "data"=>$th, "message"=>"error"];
+        $response->getBody()->write((string)json_encode(
+            ["data"=>[$data],"success"=>"true","message"=>"ok"]));
+        $response->withHeader('Access-Control-Allow-Origin', '*');
+        return $response;
+    }   
+});
+//delete
+$app->post('/api/v0/structure/delete/{structure_id}', function (Request $request,Response  $response, $args) {
+    try {
+        //code...
+            $id = (int)$args['structure_id'];
+            
+            $dbhost = 'aws-sandbox-development.cmhzsdmoqjl7.us-east-1.rds.amazonaws.com';
+            $dbuser = 'admin';
+            $dbpass = 'TycKdB7X106OU4GH';
+            $dbname = 'roi';
+            $mysqli = new mysqli($dbhost, $dbuser, $dbpass, $dbname);
+        
+            if ($mysqli->connect_errno) {
+                printf("Connect failed: %s<br />", $mysqli->connect_error);
+                exit();
+            }
+            
+                
+                $remove_template = "DELETE FROM roi_company_structures
+                WHERE structure_id = $id";  
+               
+                $mysqli->query($remove_template);
+
+                $data = ["structure_id"=>$id];
+                $response->getBody()->write((string)json_encode(
+                    ["data"=>[$data],"success"=>"true","message"=>"successfully deleted"]));
                 $response->withHeader('Access-Control-Allow-Origin', '*');
                 return $response;
         
